@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+set -e
+
+export DDE_WORKDIR=$(cd $(dirname $0) && pwd)
+
+export DDE_CONTAINER_ID_FILE="$HOME/.dde_container_id"
+
+dde_help() {
+  dde_name=${0##*/}
+  echo "
+$dde_name
+Docker Dev Environment CLI
+Version: $(cat $DDE_WORKDIR/VERSION)
+https://github.com/blitterated/docker_dev_env_cli
+Usage: $dde_name [command]
+Commands:
+  start     Start a single instance of any DDE container
+  stop      Stop the running DDE container
+  exec      Run a command against the running DDE container with docker exec
+  *         Help
+"
+  exit 1
+}
+
+CMDS_DIR="$DDE_WORKDIR/commands/"
+CMD=$1
+shift
+
+case "$CMD" in
+  start)
+    "$CMDS_DIR/start" "$@"
+    ;;
+  stop)
+    "$CMDS_DIR/stop" "$@"
+    ;;
+  exec|x)
+    "$CMDS_DIR/exec" "$@"
+    ;;
+  *)
+    cli_help
+    ;;
+esac

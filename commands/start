@@ -1,0 +1,28 @@
+#!/usr/bin/env bash 
+set -e
+
+help_start() {
+  echo "
+Command: start
+Usage:
+  start image_name"
+  exit 1
+}
+
+[ ! -n "$1" ] && help_start
+
+# check that DDE_CONTAINER_ID_FILE doesn't already exist
+if [[ -f "$DDE_CONTAINER_ID_FILE" ]]; then
+  read DDE_CONTAINER_ID < "$DDE_CONTAINER_ID_FILE"
+  echo "DDE container already running:"
+  echo "$DDE_CONTAINER_ID"
+  exit 1
+fi
+
+DDE_CONTAINER_ID=$(docker run -d --rm "$1")
+
+touch $DDE_CONTAINER_ID_FILE
+echo $DDE_CONTAINER_ID > "$DDE_CONTAINER_ID_FILE"
+
+# write the container's id to STDOUT
+echo $DDE_CONTAINER_ID

@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -e
+
+# check that the ID exists and that the container is running
+if [[ ! -f "$DDE_CONTAINER_ID_FILE" ]]; then
+  echo "No DDE container running"
+  exit 1
+fi
+
+read DDE_CONTAINER_ID < "$DDE_CONTAINER_ID_FILE"
+docker stop "$DDE_CONTAINER_ID"
+
+rm "$DDE_CONTAINER_ID_FILE"
+
+# docker stop will output the container's full id

@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+set -e
+
+help_exec() {
+  echo "
+Command: exec
+Usage:
+  exec your command string goes here"
+  exit 1
+}
+
+[ ! -n "$1" ] && help_exec
+
+# check that the ID exists and that the container is running
+if [[ ! -f "$DDE_CONTAINER_ID_FILE" ]]; then
+  echo "No DDE container running"
+  exit 1
+fi
+
+DOCKER_PATH='export PATH=/command:${PATH}'
+EXEC_CMD="bash -c $DOCKER_PATH; $@"
+
+echo EXEC_CMD: $EXEC_CMD
+
+read DDE_CONTAINER_ID < "$DDE_CONTAINER_ID_FILE"
+docker exec -it $DDE_CONTAINER_ID $EXEC_CMD
