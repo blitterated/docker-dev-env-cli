@@ -2,15 +2,39 @@
 
 set -e
 
-# check that the ID exists and that the container is running
-if [[ ! -f "$DDE_CONTAINER_ID_FILE" ]]; then
-  echo "No DDE container running"
+help_stop() {
+  echo "
+Command: stop
+Usage:
+  stop image_name"
+  exit 1
+}
+
+container_running() {
+  [[ $( docker ps | grep ${CID:0:12} | wc -l ) -gt 0 ]]
+  return $?
+}
+
+[ ! -n "$1" ] && help_stop
+
+IMAGE_NAME=$1
+shift
+
+CID_FILE="${CID_DIR}/${IMAGE_NAME}"
+
+# check for an existing container id file
+if [[ ! -f "$CID_FILE" ]]; then
+  echo "No existing ${IMAGE_NAME} container."
   exit 1
 fi
 
-read DDE_CONTAINER_ID < "$DDE_CONTAINER_ID_FILE"
-docker stop "$DDE_CONTAINER_ID"
+read CID < "$CID_FILE"
 
-rm "$DDE_CONTAINER_ID_FILE"
+# check that the container is running
+if ! container_running; then
+  echo "No ${IMAGE_NAME} container running."
+  exit 1
+fi
 
+docker stop "$CID"
 # docker stop will output the container's full id

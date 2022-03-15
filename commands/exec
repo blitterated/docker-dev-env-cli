@@ -6,18 +6,34 @@ help_exec() {
   echo "
 Command: exec
 Usage:
-  exec your command string goes here"
+  exec image_name your command string goes here"
   exit 1
+}
+
+container_running() {
+  [[ $( docker ps | grep ${CID:0:12} | wc -l ) -gt 0 ]]
+  return $?
 }
 
 [ ! -n "$1" ] && help_exec
 
-# check that the ID exists and that the container is running
-if [[ ! -f "$DDE_CONTAINER_ID_FILE" ]]; then
-  echo "No DDE container running"
-  exit 1
+IMAGE_NAME=$1
+shift
 
-  # TODO: need to test if container exists and is running. https://yaroslavgrebnov.com/blog/bash-docker-check-container-existence-and-status/
+CID_FILE="${CID_DIR}/${IMAGE_NAME}"
+
+# check for an existing container id file
+if [[ ! -f "$CID_FILE" ]]; then
+  echo "No existing ${IMAGE_NAME} container."
+  exit 1
+fi
+
+read CID < "$CID_FILE"
+
+# check that the container is running
+if ! container_running; then
+  echo "No ${IMAGE_NAME} container running."
+  exit 1
 fi
 
 ADD_COMMAND_PATH='export PATH=/command:${PATH}'
@@ -37,14 +53,14 @@ read -d XXX EXEC_JSON <<EOJS
 }XXX
 EOJS
 
-read DDE_CONTAINER_ID < "$DDE_CONTAINER_ID_FILE"
+MIN_EXEC_JSON=$(echo "$EXEC_JSON" | jq -c)
 
-EXEC_ID=$(curl -s -XPOST --unix-socket /var/run/docker.sock \
-               -d "${EXEC_JSON}" \
+EXEC_ID=$(curl -sS -XPOST --unix-socket /var/run/docker.sock \
+               -d "${MIN_EXEC_JSON}" \
                -H "Content-Type: application/json" \
-                "http://localhost/containers/${DDE_CONTAINER_ID}/exec" | jq -r ".Id")
+                "http://localhost/containers/${CID}/exec" | jq -r ".Id")
 
-curl -s -XPOST --output - \
+curl -sS -XPOST --output - \
      --unix-socket /var/run/docker.sock \
      -d '{"Detach": false, "Tty": false}' \
      -H "Content-Type: application/json" \

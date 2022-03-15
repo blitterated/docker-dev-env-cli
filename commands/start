@@ -1,4 +1,5 @@
 #!/usr/bin/env bash 
+
 set -e
 
 help_start() {
@@ -9,20 +10,52 @@ Usage:
   exit 1
 }
 
+run_new_container() {
+  echo "Creating ${IMAGE_NAME} container"
+
+  CID=$(docker run -d "$IMAGE_NAME")
+
+  echo "Creating CID file: $CID_FILE"
+  touch $CID_FILE
+  echo $CID > "$CID_FILE"
+
+  # write the container's id to STDOUT
+  echo $CID
+}
+
+start_existing_container() {
+  echo "Starting ${IMAGE_NAME} container"
+
+  docker start $CID
+  # docker start will output the container's full id
+}
+
+container_running() {
+  [[ $( docker ps | grep ${CID:0:12} | wc -l ) -gt 0 ]]
+  return $?
+}
+
 [ ! -n "$1" ] && help_start
 
-# check that DDE_CONTAINER_ID_FILE doesn't already exist
-if [[ -f "$DDE_CONTAINER_ID_FILE" ]]; then
-  read DDE_CONTAINER_ID < "$DDE_CONTAINER_ID_FILE"
-  echo "DDE container already running:"
-  echo "$DDE_CONTAINER_ID"
+IMAGE_NAME=$1
+shift
+
+CID_FILE="${CID_DIR}/${IMAGE_NAME}"
+
+# check for an existing container id file
+if [[ ! -f "$CID_FILE" ]]; then
+  run_new_container
+  exit 0
+fi
+
+# Load container id from file
+read CID < "$CID_FILE"
+
+if container_running; then
+  echo "${IMAGE_NAME} container already running"
+  echo $CID
   exit 1
 fi
 
-DDE_CONTAINER_ID=$(docker run -d --rm "$1")
-
-touch $DDE_CONTAINER_ID_FILE
-echo $DDE_CONTAINER_ID > "$DDE_CONTAINER_ID_FILE"
-
-# write the container's id to STDOUT
-echo $DDE_CONTAINER_ID
+start_existing_container
+exit 0

@@ -4,7 +4,10 @@ set -e
 
 export DDE_WORKDIR=$(cd $(dirname $0) && pwd)
 
-export DDE_CONTAINER_ID_FILE="$HOME/.dde_container_id"
+export CID_DIR="$DDE_WORKDIR/cids"
+
+# ensure CID_DIR exists
+[[ ! -d "$CID_DIR" ]] && mkdir -p $CID_DIR
 
 dde_help() {
   dde_name=${0##*/}
@@ -15,27 +18,31 @@ Version: $(cat $DDE_WORKDIR/VERSION)
 https://github.com/blitterated/docker_dev_env_cli
 Usage: $dde_name [command]
 Commands:
-  start     Start a single instance of any DDE container
-  stop      Stop the running DDE container
-  exec      Run a command against the running DDE container with docker exec
+  start     Start, and create if necessary, a single instance of any DDE container
+  stop      Stop a running DDE container
+  exec      Run a command against a running DDE container with docker exec
+	status    Show the status/existance of a DDE container
   *         Help
 "
   exit 1
 }
 
-CMDS_DIR="$DDE_WORKDIR/commands/"
+CMD_DIR="$DDE_WORKDIR/commands/"
 CMD=$1
 shift
 
 case "$CMD" in
   start)
-    "$CMDS_DIR/start" "$@"
+    "$CMD_DIR/start" "$@"
     ;;
   stop)
-    "$CMDS_DIR/stop" "$@"
+    "$CMD_DIR/stop" "$@"
     ;;
   exec|x)
-    "$CMDS_DIR/exec" "$@"
+    "$CMD_DIR/exec" "$@"
+    ;;
+  status|s)
+    "$CMD_DIR/status" "$@"
     ;;
   *)
     cli_help

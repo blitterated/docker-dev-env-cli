@@ -4,3 +4,4 @@
 # Ignore vim swap files
 *.swo
 *.swp
+cids/**
