@@ -22,6 +22,7 @@ Commands:
   stop      Stop a running DDE container
   exec      Run a command against a running DDE container with docker exec
   status    Show the status/existance of a DDE container
+  rm        Remove a container and its CID file
   *         Help
 "
   exit 1
@@ -43,6 +44,9 @@ case "$CMD" in
     ;;
   status|s)
     "$CMD_DIR/status" "$@"
+    ;;
+  rm)
+    "$CMD_DIR/rm" "$@"
     ;;
   *)
     cli_help
