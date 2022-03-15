@@ -2,6 +2,8 @@
 
 set -e
 
+source ${DDE_WORKDIR}/share/containers.sh
+
 help_exec() {
   echo "
 Command: exec
@@ -10,31 +12,22 @@ Usage:
   exit 1
 }
 
-container_running() {
-  [[ $( docker ps | grep ${CID:0:12} | wc -l ) -gt 0 ]]
-  return $?
-}
-
+# Make sure there is an image name supplied
 [ ! -n "$1" ] && help_exec
 
 IMAGE_NAME=$1
 shift
 
+# Make sure there is a command to run supplied
+[ ! -n "$1" ] && help_exec
+
 CID_FILE="${CID_DIR}/${IMAGE_NAME}"
 
-# check for an existing container id file
-if [[ ! -f "$CID_FILE" ]]; then
-  echo "No existing ${IMAGE_NAME} container."
-  exit 1
-fi
+ensure_container_exists
 
 read CID < "$CID_FILE"
 
-# check that the container is running
-if ! container_running; then
-  echo "No ${IMAGE_NAME} container running."
-  exit 1
-fi
+ensure_container_running
 
 ADD_COMMAND_PATH='export PATH=/command:${PATH}'
 
@@ -58,7 +51,7 @@ MIN_EXEC_JSON=$(echo "$EXEC_JSON" | jq -c)
 EXEC_ID=$(curl -sS -XPOST --unix-socket /var/run/docker.sock \
                -d "${MIN_EXEC_JSON}" \
                -H "Content-Type: application/json" \
-                "http://localhost/containers/${CID}/exec" | jq -r ".Id")
+               "http://localhost/containers/${CID}/exec" | jq -r ".Id")
 
 curl -sS -XPOST --output - \
      --unix-socket /var/run/docker.sock \

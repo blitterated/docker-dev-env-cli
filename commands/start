@@ -1,6 +1,8 @@
-#!/usr/bin/env bash 
+#!/usr/bin/env bash
 
 set -e
+
+source ${DDE_WORKDIR}/share/containers.sh
 
 help_start() {
   echo "
@@ -15,7 +17,6 @@ run_new_container() {
 
   CID=$(docker run -d "$IMAGE_NAME")
 
-  echo "Creating CID file: $CID_FILE"
   touch $CID_FILE
   echo $CID > "$CID_FILE"
 
@@ -30,11 +31,6 @@ start_existing_container() {
   # docker start will output the container's full id
 }
 
-container_running() {
-  [[ $( docker ps | grep ${CID:0:12} | wc -l ) -gt 0 ]]
-  return $?
-}
-
 [ ! -n "$1" ] && help_start
 
 IMAGE_NAME=$1
@@ -43,7 +39,7 @@ shift
 CID_FILE="${CID_DIR}/${IMAGE_NAME}"
 
 # check for an existing container id file
-if [[ ! -f "$CID_FILE" ]]; then
+if container_exists; then
   run_new_container
   exit 0
 fi

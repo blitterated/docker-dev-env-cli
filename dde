@@ -21,7 +21,7 @@ Commands:
   start     Start, and create if necessary, a single instance of any DDE container
   stop      Stop a running DDE container
   exec      Run a command against a running DDE container with docker exec
-	status    Show the status/existance of a DDE container
+  status    Show the status/existance of a DDE container
   *         Help
 "
   exit 1
