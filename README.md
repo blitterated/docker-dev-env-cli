@@ -35,7 +35,7 @@ A quick and dirty CLI to help make issuing commands to the DDE more concise.
 
 ## Containers
 
-The containers' id are kept track of in the `cid/<image_name>` directory found in the same directory where `dde` is run from.
+The containers' ids are kept track of in the `cid/<image_name>` directory found in the same directory where `dde` is run from.
 
 ## Caveats
 
