@@ -1,10 +1,10 @@
 container_exists() {
-  [[ ! -f "$CID_FILE" ]]
+  [[ -f "$CID_FILE" ]]
   return $?
 }
 
 ensure_container_exists() {
-  if container_exists; then
+  if ! container_exists; then
     echo "No existing ${IMAGE_NAME} container."
     exit 1
   fi
@@ -22,3 +22,10 @@ ensure_container_running() {
   fi
 }
 
+ensure_container_not_running() {
+  if container_running; then
+    echo "${IMAGE_NAME} container already running"
+    echo $CID
+    exit 1
+  fi
+}

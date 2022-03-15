@@ -39,7 +39,7 @@ shift
 CID_FILE="${CID_DIR}/${IMAGE_NAME}"
 
 # check for an existing container id file
-if container_exists; then
+if ! container_exists; then
   run_new_container
   exit 0
 fi
@@ -47,11 +47,7 @@ fi
 # Load container id from file
 read CID < "$CID_FILE"
 
-if container_running; then
-  echo "${IMAGE_NAME} container already running"
-  echo $CID
-  exit 1
-fi
+ensure_container_not_running
 
 start_existing_container
 exit 0

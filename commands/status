@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+set -e
+
+source ${DDE_WORKDIR}/share/containers.sh
+
+help_status() {
+  echo "
+Command: status
+Usage:
+  status image_name"
+  exit 1
+}
+
+[ ! -n "$1" ] && help_status
+
+IMAGE_NAME=$1
+shift
+
+CID_FILE="${CID_DIR}/${IMAGE_NAME}"
+
+if ! container_exists; then
+  echo "No container found for ${IMAGE_NAME} image"
+  exit 0
+fi
+
+read CID < "$CID_FILE"
+
+if container_running; then
+  echo "${IMAGE_NAME} container running."
+else
+  echo "${IMAGE_NAME} container stopped."
+fi
+
+echo "$CID"
+exit 0
