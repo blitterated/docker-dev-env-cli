@@ -27,6 +27,12 @@ A quick and dirty CLI to help make issuing commands to the DDE more concise.
     dde status image_name
     ```
 
+* `rm`: deletes a stopped DDE container.
+
+    ```sh
+    dde rm image_name
+    ```
+
 ## Containers
 
 The containers' id are kept track of in the `cid/<image_name>` directory found in the same directory where `dde` is run from.
@@ -34,6 +40,14 @@ The containers' id are kept track of in the `cid/<image_name>` directory found i
 ## Caveats
 
 It can only handle a single container for a given image. That means one dev container for one dev image.
+
+## Dependencies
+
+* `docker`
+* `jq`
+* `curl`
+* `grep`
+* `wc`
 
 # Resources
 
