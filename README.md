@@ -75,3 +75,8 @@ It can only handle a single container for a given image. That means one dev cont
 * Docker
   * [Bash, Docker: Check Container Existence and Status](https://yaroslavgrebnov.com/blog/bash-docker-check-container-existence-and-status/)
   * [SO: How to filter docker process based on image](https://stackoverflow.com/questions/29406871/how-to-filter-docker-process-based-on-image)
+* Docker exec's "application/vnd.docker.raw-stream"
+  * [SO: Remove non printing chars from bash variable](https://stackoverflow.com/a/22045214)
+  * [SO: RE error: illegal byte sequence on Mac OS X](https://stackoverflow.com/a/23584470)
+  * [tr(1) — Linux manual page](https://man7.org/linux/man-pages/man1/tr.1.html)
+  * [Handling multiplexed streams](https://docker-py.readthedocs.io/en/stable/user_guides/multiplex.html)
