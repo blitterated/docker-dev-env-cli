@@ -46,6 +46,8 @@ It can only handle a single container for a given image. That means one dev cont
 * `docker`
 * `jq`
 * `curl`
+* `iconv`
+* `tr`
 * `grep`
 * `wc`
 
