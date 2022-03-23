@@ -57,4 +57,6 @@ curl -sS -XPOST --output - \
      --unix-socket /var/run/docker.sock \
      -d '{"Detach": false, "Tty": false}' \
      -H "Content-Type: application/json" \
-     "http://localhost/exec/${EXEC_ID}/start"
+     "http://localhost/exec/${EXEC_ID}/start" | \
+     iconv -f ISO-8859-1 -t UTF-8 | \
+     tr -cd "[:print:][:space:]"
