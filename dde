@@ -28,9 +28,14 @@ Commands:
   exit 1
 }
 
-CMD_DIR="$DDE_WORKDIR/commands/"
+# ensure a command was provided
+[[ $# -eq 0 ]] && dde_help
+
+# grab the command and pop it off the arguments
 CMD=$1
 shift
+
+CMD_DIR="$DDE_WORKDIR/commands"
 
 case "$CMD" in
   start)
@@ -48,7 +53,7 @@ case "$CMD" in
   rm)
     "$CMD_DIR/rm" "$@"
     ;;
-  *)
-    cli_help
+  *|"")
+    dde_help
     ;;
 esac
