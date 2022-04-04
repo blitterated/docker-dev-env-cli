@@ -21,6 +21,7 @@ Commands:
   start     Start, and create if necessary, a single instance of any DDE container
   stop      Stop a running DDE container
   exec      Run a command against a running DDE container with docker exec
+  attach    Create a new shell process via docker exec
   status    Show the status/existance of a DDE container
   rm        Remove a container and its CID file
   *         Help
@@ -46,6 +47,9 @@ case "$CMD" in
     ;;
   exec|x)
     "$CMD_DIR/exec" "$@"
+    ;;
+  attach|a)
+    "$CMD_DIR/attach" "$@"
     ;;
   status|s)
     "$CMD_DIR/status" "$@"

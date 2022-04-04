@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+
+set -e
+set -x
+
+source ${DDE_WORKDIR}/share/containers.sh
+
+help_attach() {
+  echo "
+Command: attach
+Usage:
+  attach image_name"
+  exit 1
+}
+
+# Make sure there is an image name supplied
+[ ! -n "$1" ] && help_attach
+
+IMAGE_NAME=$1
+shift
+
+CID_FILE="${CID_DIR}/${IMAGE_NAME}"
+
+ensure_container_exists
+
+read CID < "$CID_FILE"
+
+ensure_container_running
+
+ADD_COMMAND_PATH='export PATH=/command:${PATH}'
+
+read -d XXX EXEC_JSON <<EOJS
+{
+  "AttachStdin": true,
+  "AttachStdout": true,
+  "AttachStderr": true,
+  "Tty": true,
+  "WorkingDir": "/root",
+  "DetachKeys": "ctrl-p,ctrl-q",
+  "Cmd": [
+    "bash",
+    "-c",
+    "${ADD_COMMAND_PATH}; bash"
+  ]
+}XXX
+EOJS
+
+MIN_EXEC_JSON=$(echo "$EXEC_JSON" | jq -c)
+
+EXEC_ID=$(curl -sS -XPOST --unix-socket /var/run/docker.sock \
+               -d "${MIN_EXEC_JSON}" \
+               -H "Content-Type: application/json" \
+               "http://localhost/containers/${CID}/exec" | jq -r ".Id")
+
+echo EXEC_ID=$EXEC_ID
+
+curl -sSv -XPOST --output - \
+     --unix-socket /var/run/docker.sock \
+     -d '{"Detach": false, "Tty": true}' \
+     -H "Content-Type: application/json" \
+     "http://localhost/exec/${EXEC_ID}/start" | \
+     iconv -f ISO-8859-1 -t UTF-8 | \
+     tr -cd "[:print:][:space:]"
