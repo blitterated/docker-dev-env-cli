@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+set -e
+
+source ${DDE_WORKDIR}/share/containers.sh
+
+help_id() {
+  echo "
+Command: id
+Usage:
+  id image_name"
+  exit 1
+}
+
+[ ! -n "$1" ] && help_id
+
+IMAGE_NAME=$1
+shift
+
+CID_FILE="${CID_DIR}/${IMAGE_NAME}"
+
+ensure_container_exists
+
+read CID < "$CID_FILE"
+echo $CID

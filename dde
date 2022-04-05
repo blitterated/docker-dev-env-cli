@@ -23,6 +23,7 @@ Commands:
   exec      Run a command against a running DDE container with docker exec
   status    Show the status/existance of a DDE container
   rm        Remove a container and its CID file
+  id        Get the full length ID for a container
   *         Help
 "
   exit 1
@@ -49,6 +50,9 @@ case "$CMD" in
     ;;
   status|s)
     "$CMD_DIR/status" "$@"
+    ;;
+  id)
+    "$CMD_DIR/id" "$@"
     ;;
   rm)
     "$CMD_DIR/rm" "$@"
