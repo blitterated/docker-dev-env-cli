@@ -4,15 +4,15 @@ set -e
 
 source ${DDE_WORKDIR}/share/containers.sh
 
-help_run() {
+help_rm() {
   echo "
-Command: run
+Command: rm
 Usage:
-  run image_name"
+  rm image_name"
   exit 1
 }
 
-[ ! -n "$1" ] && help_run
+[ ! -n "$1" ] && help_rm
 
 IMAGE_NAME=$1
 shift
